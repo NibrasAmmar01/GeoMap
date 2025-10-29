@@ -1,0 +1,19 @@
+body{
+  margin: 0;
+  padding: 0;
+}
+
+.App {
+  text-align: center;
+}
+.searchtext{
+  width: 400px;
+  height: 40px;
+  border-radius: 2px;
+}
+.searchbtn{
+  width: 200px;
+  height: 40px;
+  border-radius: 2px;
+  text-align: center;
+}
