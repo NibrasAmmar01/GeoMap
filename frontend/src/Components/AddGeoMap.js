@@ -24,9 +24,16 @@ function AddGeoMap() {
         console.log(data); 
         if (data && data.length > 0) {
         setLocation({
-          lat: parseFloat(data[0].lat),
-          lng: parseFloat(data[0].lon)
+          lat: parseFloat(data[0]?.lat),
+          lng: parseFloat(data[0]?.lon),
+          displayName: data[0]?.display_name || "Unknown Location",
+          type: data[0]?.type || "N/A",
+          category: data[0]?.class || "N/A",
+          address: data[0]?.address || {},
+          country: data[0]?.address?.country || "Unknown",
+          boundingBox: data[0]?.boundingbox || []
         });
+
         const response = await axios.post("http://localhost:2000/api/getMapInfo", { name });
         console.log(response.data);
         setMapInfo(response.data)
@@ -42,7 +49,7 @@ function AddGeoMap() {
 
   return (
     <div>
-     
+
     </div>
   );
 }   
