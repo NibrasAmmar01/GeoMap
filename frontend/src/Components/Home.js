@@ -5,7 +5,7 @@ import { useNavigate} from 'react-router-dom';
 
 export default function Home() {
 
-    const [name, setName] = useState();
+    const [name, setName] = useState("");
     const history = useNavigate()
     let message=''
     const addName=()=>{

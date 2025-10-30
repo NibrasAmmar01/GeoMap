@@ -29,3 +29,17 @@ module.exports.addName = (req, res) => {
     });
   });
 };
+
+module.exports.mapInfo = (req, res)=>{
+  const name = req.body.name
+  const sql = "SELECT * FROM store WHERE name=?"
+  db.query(sql, [name], (err, result) => {
+    if(err){
+      console.error(err);
+      return res.status(500).json({ msg: "Database error" });
+    }
+    res.status(200).json({ result });
+  })
+
+
+}
