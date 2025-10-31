@@ -52,7 +52,7 @@ function AddGeoMap() {
   const {paths} = state
 
   return (
-    <div>
+    <div >
       <GeoMaps
       center= {mapLocation}
       paths= {state.paths || []}
