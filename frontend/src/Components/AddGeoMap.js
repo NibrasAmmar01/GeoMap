@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
+import GeoMaps from './GeoMaps';
 
 
 function AddGeoMap() {
@@ -47,9 +48,16 @@ function AddGeoMap() {
     if (name) fetchLocation();
   }, [name]);
 
+  const [state, setState] = useState([])
+  const {paths} = state
+
   return (
     <div>
-
+      <GeoMaps
+      center= {mapLocation}
+      paths= {state.paths || []}
+      setPaths={(newPaths) => setState({ paths: newPaths })}
+      />
     </div>
   );
 }   
