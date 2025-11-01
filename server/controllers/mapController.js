@@ -54,12 +54,12 @@ module.exports.addMap = (req, res) => {
   }
 
   // Optional: check if map already exists
-  const checkSql = "SELECT * FROM store2 WHERE parentid = ? AND coordinates = ?";
+  const checkSql = "SELECT * FROM store2 WHERE parentId = ? AND coordinates = ?";
   db.query(checkSql, [parentId, coordinates], (err, result) => {
     if (err) return res.status(500).json({ msg: "Database error" });
 
     if (result.length > 0) {
-      return res.status(400).json({ msg: "This map already exists" });
+      return res.status(400).json({ msg: "Something Went Wrong" });
     }
 
     // Insert

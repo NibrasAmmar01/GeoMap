@@ -47,6 +47,8 @@ function AddGeoMap() {
   const [state, setState] = useState({ paths: [] });
   const paths = state.paths;
 
+  //console.log("mapInfo", mapInfo.data[0].id)
+
   const saveMap = () => {
     if (!paths || paths.length === 0) {
       alert("No polygon drawn!");
