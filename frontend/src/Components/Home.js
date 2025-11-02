@@ -37,7 +37,18 @@ export default function Home() {
   };
 
   useEffect(() => {
-    getAllMaps();
+    let unmounted = false;
+
+    const timer = setTimeout(() => {
+      if (!unmounted) {
+        getAllMaps();
+      }
+    }, 500);
+
+    return () => {
+      unmounted = true; // cleanup flag
+      clearTimeout(timer); // clear the timeout
+    };
   }, []);
 
   return (
