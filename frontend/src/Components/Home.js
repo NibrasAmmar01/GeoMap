@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Button, Table } from "react-bootstrap";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import Map1 from "./Map1"; // ✅ Import your component
 
 export default function Home() {
   const [name, setName] = useState("");
@@ -46,14 +47,46 @@ export default function Home() {
     }, 500);
 
     return () => {
-      unmounted = true; // cleanup flag
-      clearTimeout(timer); // clear the timeout
+      unmounted = true;
+      clearTimeout(timer);
     };
   }, []);
 
+  // ===== Handlers =====
+  const handleView = (map) => {
+    navigate(`/map/${map.name}`);
+  };
+
+  const handleEdit = (map) => {
+    const newName = prompt("Enter new name for this map:", map.name);
+    if (!newName || newName.trim() === map.name) return;
+    
+    axios
+    .post("http://localhost:2000/api/editMap", { id: map.id, newName: newName.trim() })
+    .then((response) => {
+      alert(response.data.msg);
+      getAllMaps(); // refresh table
+    })
+    .catch((err) => {
+      console.error(err);
+      alert("Something went wrong while updating the name.");
+    });
+  };
+
+  const handleDelete = (id) => {
+    if (window.confirm("Are you sure you want to delete this map?")) {
+      axios
+        .post("http://localhost:2000/api/deleteMap", { id })
+        .then((response) => {
+          alert(response.data.msg);
+          getAllMaps(); // refresh table
+        })
+        .catch((err) => console.error(err));
+    }
+  };
+
   return (
     <div className="homepage-container" style={{ flexDirection: "column", gap: "30px" }}>
-      
       {/* ===== Search Panel ===== */}
       <div className="homepage-content search-panel">
         <h1 className="homepage-title">🌍 GeoMap Application</h1>
@@ -102,19 +135,15 @@ export default function Home() {
             <tbody>
               {maps.length > 0 ? (
                 maps.map((map, index) => (
-                  <tr key={index}>
-                    <td>{map.id}</td>
-                    <td style={{ textAlign: "left" }}>{map.name}</td>
-                    <td>
-                      <Button
-                        variant="outline-dark"
-                        size="sm"
-                        onClick={() => navigate(`/map/${map.name}`)}
-                      >
-                        View
-                      </Button>
-                    </td>
-                  </tr>
+                  <Map1
+                    key={index}
+                    id={map.id}
+                    name={map.name}
+                    map={map}
+                    onView={handleView}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                  />
                 ))
               ) : (
                 <tr>

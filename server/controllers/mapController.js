@@ -83,3 +83,96 @@ module.exports.getAllMaps = (req, res) => {
     return res.status(200).json({ result });
   });
 };
+
+
+module.exports.deleteMap = (req, res) => {
+  const id = req.body.id;
+
+  if (!id) {
+    return res.status(400).json({ msg: "Missing map ID" });
+  }
+
+  // Step 1: Check if the map exists in `store`
+  const checkSql = "SELECT * FROM store WHERE id = ?";
+  db.query(checkSql, [id], (err, result) => {
+    if (err) {
+      console.error("Error checking map:", err);
+      return res.status(500).json({ msg: "Database error while checking map" });
+    }
+
+    if (result.length === 0) {
+      return res.status(404).json({ msg: "Map not found" });
+    }
+
+    // Step 2: Delete related entries in `store2`
+    const deleteStore2Sql = "DELETE FROM store2 WHERE parentid = ?";
+    db.query(deleteStore2Sql, [id], (err) => {
+      if (err) {
+        console.error("Error deleting related polygons:", err);
+        return res.status(500).json({ msg: "Error deleting related polygons" });
+      }
+
+      // Step 3: Delete the main record from `store`
+      const deleteStoreSql = "DELETE FROM store WHERE id = ?";
+      db.query(deleteStoreSql, [id], (err, result2) => {
+        if (err) {
+          console.error("Error deleting map:", err);
+          return res.status(500).json({ msg: "Error deleting map" });
+        }
+
+        if (result2.affectedRows > 0) {
+          return res.status(200).json({ msg: "Map and related polygons deleted successfully" });
+        } else {
+          return res.status(400).json({ msg: "Failed to delete map" });
+        }
+      });
+    });
+  });
+};
+
+
+module.exports.editMap = (req, res) => {
+  const { id, newName } = req.body;
+
+  if (!id || !newName) {
+    return res.status(400).json({ msg: "Missing ID or new name." });
+  }
+
+  // Step 1: Check if the new name already exists
+  const checkSql = "SELECT * FROM store WHERE name = ?";
+  db.query(checkSql, [newName], (err, checkResult) => {
+    if (err) {
+      console.error("Error checking name:", err);
+      return res.status(500).json({ msg: "Database error while checking name." });
+    }
+
+    if (checkResult.length > 0) {
+      return res.status(422).json({ msg: "This name already exists in the list." });
+    }
+
+    // Step 2: Update in `store`
+    const updateStoreSql = "UPDATE store SET name = ? WHERE id = ?";
+    db.query(updateStoreSql, [newName, id], (err, result) => {
+      if (err) {
+        console.error("Error updating store:", err);
+        return res.status(500).json({ msg: "Database error while updating store." });
+      }
+
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ msg: "Map not found." });
+      }
+
+      // Step 3: Update in `store2` (maintain consistency)
+      const updateStore2Sql = "UPDATE store2 SET parentid = ? WHERE parentid = ?";
+      db.query(updateStore2Sql, [newName, result.insertId || id], (err2) => {
+        if (err2) {
+          console.error("Error updating store2:", err2);
+          return res.status(500).json({ msg: "Error updating related maps." });
+        }
+
+        return res.status(200).json({ msg: "Map updated successfully." });
+      });
+    });
+  });
+};
+
