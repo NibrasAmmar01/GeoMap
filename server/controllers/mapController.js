@@ -71,3 +71,15 @@ module.exports.addMap = (req, res) => {
     });
   });
 };
+
+
+module.exports.getAllMaps = (req, res) => {
+  const selectsql = "SELECT * FROM store";
+
+  db.query(selectsql, (err, result) => {
+    if (err) {
+      return res.status(400).json({ msg: "Something went wrong", error: err });
+    }
+    return res.status(200).json({ result });
+  });
+};

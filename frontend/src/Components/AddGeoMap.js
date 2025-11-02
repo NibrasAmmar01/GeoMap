@@ -119,6 +119,7 @@ function AddGeoMap() {
           {saved ? 'Saved ✅' : 'Save Map'}
         </button>
       )}
+      <button onClick={()=>history("/")}>Go Back</button>
     </div>
   );
 }
