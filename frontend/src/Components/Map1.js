@@ -1,6 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
+import Modal from "react-modal";
 
 export default function Map1({ id, name, map, onView, onEdit, onDelete }) {
+  const [modalView, setModalView] = useState(false)
+  const openViewModal = () =>{
+    setModalView(true)
+  }
   return (
     <tr>
       <td>{id}</td>
