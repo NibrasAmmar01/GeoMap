@@ -176,3 +176,45 @@ module.exports.editMap = (req, res) => {
   });
 };
 
+
+module.exports.getGeoMapInfo = (req, res) => {
+  const { parentId } = req.body;
+
+  if (!parentId) {
+    return res.status(400).json({ msg: "Missing parentId" });
+  }
+
+  const sqlQuery = "SELECT parentId, coordinates FROM store2 WHERE parentId = ?";
+
+  db.query(sqlQuery, [parentId], (err, result) => {
+    if (err) {
+      console.error("Error fetching geo info:", err);
+      return res.status(500).json({ msg: "Database error while fetching geo info" });
+    }
+
+    if (result.length === 0) {
+      return res.status(200).json([]);
+    }
+
+    // ✅ Parse only if coordinates is a string
+    const parsedResult = result.map((item) => {
+      let coords = item.coordinates;
+
+      if (typeof coords === "string") {
+        try {
+          for (let i = 0; i < 3; i++) {
+            if (typeof coords === "string") coords = JSON.parse(coords);
+            else break;
+          }
+        } catch (e) {
+          console.warn(`Invalid coordinates for parentId ${item.parentId}:`, coords);
+        }
+      }
+
+      return { ...item, coordinates: coords };
+    });
+
+    return res.status(200).json(parsedResult);
+  });
+};
+
