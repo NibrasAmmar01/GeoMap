@@ -140,7 +140,7 @@ export default function Home() {
                     id={map.id}
                     name={map.name}
                     map={map}
-                    onView={handleView}
+                    //onView={handleView}
                     onEdit={handleEdit}
                     onDelete={handleDelete}
                   />

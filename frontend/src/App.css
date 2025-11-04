@@ -160,3 +160,39 @@ body {
     margin-bottom: 10px;
   }
 }
+
+
+/* ===== React Modal Styles ===== */
+.custom-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.55); /* dim background */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999; /* ensure it's above everything */
+}
+
+.custom-modal {
+  background: #fff;
+  border-radius: 10px;
+  max-width: 450px;
+  width: 90%;
+  padding: 25px;
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.3);
+  animation: popup 0.25s ease-in-out;
+}
+
+@keyframes popup {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
