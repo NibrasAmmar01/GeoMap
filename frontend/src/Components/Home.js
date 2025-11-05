@@ -2,30 +2,40 @@ import React, { useState, useEffect } from "react";
 import { Button, Table } from "react-bootstrap";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import Map1 from "./Map1"; // ✅ Import your component
+import Map1 from "./Map1";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function Home() {
   const [name, setName] = useState("");
   const [maps, setMaps] = useState([]);
   const navigate = useNavigate();
 
+  // === Add new map ===
   const addName = () => {
-    if (!name.trim()) return;
+    if (!name.trim()) {
+      toast.warn("Please enter a location name first.");
+      return;
+    }
 
     axios
       .post("http://localhost:2000/api/addName", { name: name.trim() })
       .then((response) => {
-        if (response) {
-          alert(response.data.msg);
+        if (response && response.data.msg) {
+          toast.success(response.data.msg);
+          navigate(`/map/${name.trim()}`);
+        } else {
+          toast.success("Location added successfully!");
           navigate(`/map/${name.trim()}`);
         }
       })
       .catch((err) => {
         console.error(err);
-        alert("Something went wrong while adding the location");
+        toast.error("Something went wrong while adding the location.");
       });
   };
 
+  // === Fetch all maps ===
   const getAllMaps = () => {
     axios
       .post("http://localhost:2000/api/getAllMaps")
@@ -34,7 +44,10 @@ export default function Home() {
           setMaps(response.data.result);
         }
       })
-      .catch((err) => console.error(err));
+      .catch((err) => {
+        console.error(err);
+        toast.error("Failed to fetch maps.");
+      });
   };
 
   useEffect(() => {
@@ -52,36 +65,44 @@ export default function Home() {
     };
   }, []);
 
-  // ===== Handlers =====
+  // === View Map ===
   const handleView = (map) => {
     navigate(`/map/${map.name}`);
   };
 
+  // === Edit Map ===
   const handleEdit = (map) => {
     const newName = prompt("Enter new name for this map:", map.name);
     if (!newName || newName.trim() === map.name) return;
-    
+
     axios
-    .post("http://localhost:2000/api/editMap", { id: map.id, newName: newName.trim() })
-    .then((response) => {
-      alert(response.data.msg);
-      getAllMaps(); // refresh table
-    })
-    .catch((err) => {
-      console.error(err);
-      alert("Something went wrong while updating the name.");
-    });
+      .post("http://localhost:2000/api/editMap", {
+        id: map.id,
+        newName: newName.trim(),
+      })
+      .then((response) => {
+        toast.success(response.data.msg || "Map name updated!");
+        getAllMaps();
+      })
+      .catch((err) => {
+        console.error(err);
+        toast.error("Something went wrong while updating the name.");
+      });
   };
 
+  // === Delete Map ===
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to delete this map?")) {
       axios
         .post("http://localhost:2000/api/deleteMap", { id })
         .then((response) => {
-          alert(response.data.msg);
-          getAllMaps(); // refresh table
+          toast.success(response.data.msg || "Map deleted successfully!");
+          getAllMaps();
         })
-        .catch((err) => console.error(err));
+        .catch((err) => {
+          console.error(err);
+          toast.error("Something went wrong while deleting the map.");
+        });
     }
   };
 
@@ -93,14 +114,23 @@ export default function Home() {
         <p className="homepage-subtitle">
           Enter a location name to add it and start mapping
         </p>
-        <div style={{ display: "flex", justifyContent: "center", gap: "10px", flexWrap: "wrap" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            gap: "10px",
+            flexWrap: "wrap",
+          }}
+        >
           <input
             type="text"
             placeholder="Enter location..."
             value={name}
             onChange={(e) => setName(e.target.value)}
             className="searchtext"
-            onKeyPress={(e) => { if (e.key === "Enter") addName(); }}
+            onKeyPress={(e) => {
+              if (e.key === "Enter") addName();
+            }}
           />
           <Button
             variant="dark"
@@ -140,7 +170,7 @@ export default function Home() {
                     id={map.id}
                     name={map.name}
                     map={map}
-                    //onView={handleView}
+                    onView={handleView}
                     onEdit={handleEdit}
                     onDelete={handleDelete}
                   />
@@ -156,6 +186,9 @@ export default function Home() {
           </Table>
         </div>
       </div>
+
+      {/* Toast Container */}
+      <ToastContainer position="top-center" autoClose={2000} />
     </div>
   );
 }
