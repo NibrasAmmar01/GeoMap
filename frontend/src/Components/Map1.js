@@ -130,6 +130,8 @@ export default function Map1({ id, name, map, onEdit, onDelete }) {
     return <pre style={styles.coordinatesBlock}>{JSON.stringify(coords, null, 2)}</pre>;
   };
 
+  
+
   return (
     <>
       <tr>

@@ -119,7 +119,28 @@ function AddGeoMap() {
           {saved ? 'Saved ✅' : 'Save Map'}
         </button>
       )}
-      <button onClick={()=>history("/")}>Go Back</button>
+      <button
+      onClick={() => history("/")}
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '12px 24px',
+        marginTop: '15px',
+        backgroundColor: '#6c757d',
+        color: 'white',
+        border: 'none',
+        borderRadius: '8px',
+        fontSize: '16px',
+        cursor: 'pointer',
+        transition: 'all 0.3s ease',
+        boxShadow: '0px 4px 6px rgba(0,0,0,0.2)',
+      }}
+      onMouseEnter={(e) => (e.target.style.backgroundColor = '#5a6268')}
+      onMouseLeave={(e) => (e.target.style.backgroundColor = '#6c757d')}
+    >
+      ⬅ Go Back
+    </button>
     </div>
   );
 }
